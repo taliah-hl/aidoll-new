@@ -76,9 +76,11 @@ class AwsBot():
         return self.chat_bot.chat_with_bot(msg, image_description, file_path)
 
     
-    def image_content(self, image_file_path: Path=None):
-        return self.img_retriever.detect_image_labels(image_file_path)
+    def image_content(self, model, image_file_path: Path=None):
+        return self.img_retriever.detect_image_labels(model, image_file_path)
 
+    def image_to_response(self, msg, image_path, chat_record_path):
+        return self.chat_bot.image_to_response(msg, image_path, chat_record_path)
     
     def text_to_speech(self, text, speech_file_path):
             
