@@ -36,10 +36,10 @@ class AwsChatBot():
         self.model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
         self.knowledge_base_id = "GWKCXUG2CA"
 
-    def chat_with_bot(self, msg: str, image_description:str):
+    def chat_with_bot(self, msg: str, image_description:str=None):
         response = None
 
-        response = self._send_request_to_bot(msg, image_description)
+        response = self._send_request_to_bot(msg, image_description=None)
 
 
 
@@ -60,7 +60,7 @@ class AwsChatBot():
         else:
             return "不好意思，我聽不清楚，可以跟我再說一次嗎?"
 
-    def _send_request_to_bot(self, msg:str, image_description:str, references:str=None):
+    def _send_request_to_bot(self, msg:str, image_description:str=None, references:str=None):
         try:
             system_prompt=PERSONALITY_PROMPT
 
@@ -82,10 +82,14 @@ class AwsChatBot():
             system_prompt+=f"請根據這些對話的語氣與風格，回應粉絲的訊息：「{msg}」，並參考粉絲分享給你的照片內容"
             system_prompt+=REMINDER
 
+            # user prompt
+            user_prompt=""
+            
             # photo from user
-            user_prompt = "這是粉絲分享給你的照片內容:"
-            user_prompt+=image_description
-            user_prompt+="\n"
+            if image_description:
+                user_prompt = "這是粉絲分享給你的照片內容:"
+                user_prompt+=image_description
+                user_prompt+="\n"
 
             # main prompt
             user_prompt+="這是粉絲的訊息:"

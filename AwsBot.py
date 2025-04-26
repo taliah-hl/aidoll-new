@@ -28,9 +28,9 @@ class AwsBot():
         self.aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
         self.aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
         self.aws_session_token = os.environ.get('AWS_SESSION_TOKEN')
-        print("aws access key: ", self.aws_access_key_id)
-        print("aws secrete key:",  self.aws_secret_access_key)
-        print("aws session token:", self.aws_session_token)
+        # print("aws access key: ", self.aws_access_key_id)
+        # print("aws secrete key:",  self.aws_secret_access_key)
+        # print("aws session token:", self.aws_session_token)
         if not self.aws_access_key_id or not self.aws_secret_access_key:
             raise EnvironmentError("AWS credentials are not set in the environment variables.")
         
