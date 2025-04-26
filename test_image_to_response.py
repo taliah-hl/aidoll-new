@@ -5,5 +5,5 @@ if "__main__" == __name__:
     #while (True):
         #user_input = input("You:  ")
     image_label = aws_bot.image_content(None)
-    response = aws_bot.chat_with_bot("你好", image_label)
+    response = aws_bot.chat_with_bot("你記得我喜歡你什麼嗎?", image_label)
     print("Bot: ", response)
