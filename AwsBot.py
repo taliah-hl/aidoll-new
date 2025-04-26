@@ -72,7 +72,7 @@ class AwsBot():
         else:
             return "error"
 
-    def chat_with_bot(self, msg: str, image_description: str):
+    def chat_with_bot(self, msg: str, image_description: str=None):
         return self.chat_bot.chat_with_bot(msg,image_description)
 
     
