@@ -7,7 +7,6 @@ import json
 import base64
 
 from constants import BEDROCK_KNOWLEDGE_BASE_ID, BEDROCK_MODEL_ID, REGION
-from system_prompt import SYSTEM_PROMPT
 from awsBots.awsChatBot import AwsChatBot
 from awsBots.awsImageToText import AwsImageToText
 
@@ -20,32 +19,33 @@ def encode_image(image_file_path):
 class AwsBot():
     def __init__(self):
        # Initialize AWS credentials as before
-        print("AWS_ACCESS_KEY_ID:", os.environ.get('AWS_ACCESS_KEY_ID'))
-        print("AWS_SECRET_ACCESS_KEY:", os.environ.get('AWS_SECRET_ACCESS_KEY'))
         self.aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
         self.aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
         self.aws_session_token = os.environ.get('AWS_SESSION_TOKEN')
+        print("aws access key: ", self.aws_access_key_id)
+        print("aws secrete key:",  self.aws_secret_access_key)
+        print("aws session token:", self.aws_session_token)
+        if not self.aws_access_key_id or not self.aws_secret_access_key:
+            raise EnvironmentError("AWS credentials are not set in the environment variables.")
+        
         self.bedrock_agent_client = boto3.client(
             service_name='bedrock-agent-runtime',
             region_name=REGION,
-            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
-            aws_session_token=os.environ.get('AWS_SESSION_TOKEN')
+            aws_access_key_id=self.aws_access_key_id,
+            aws_secret_access_key=self.aws_secret_access_key,
+            aws_session_token=self.aws_session_token
         )
         
         self.bedrock_runtime_client = boto3.client(
             service_name='bedrock-runtime',
             region_name='us-west-2',
-            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
-            aws_session_token=os.environ.get('AWS_SESSION_TOKEN')
+            aws_access_key_id=self.aws_access_key_id,
+            aws_secret_access_key=self.aws_secret_access_key,
+            aws_session_token=self.aws_session_token
         )
         
         self.knowledge_base_id = BEDROCK_KNOWLEDGE_BASE_ID
-        self.model_id = BEDROCK_MODEL_ID
-        self.max_tokens = 500
-        self.system_prompt=SYSTEM_PROMPT
-        self.knowledge_base_id = "GWKCXUG2CA"
+        
         
         
     def speech_to_text(self, audio_file_path: Path):
@@ -60,7 +60,7 @@ class AwsBot():
         return transcription.text
 
     def chat_with_bot(self, msg: str, image_description: str, use_knowledge_base:bool=False):
-        aws_chat_bot =AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token, self.knowledge_base_id)
+        aws_chat_bot =AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token)
         return aws_chat_bot.chat_with_bot(msg,image_description, use_knowledge_base)
 
     

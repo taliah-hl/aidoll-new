@@ -15,8 +15,9 @@ class AwsImageToText:
         # Create a Rekognition client
         if not image_path:
             image_path3="C:\\Users\\taliah\\code\\my_thing\\aidoll-pi-new\\imgs\\mountain.png"
-            image_path2="C:\\Users\\taliah\\code\\my_thing\\aidoll-pi-new\\imgs\\bear3.jpg"
-            image_path="C:\\Users\\taliah\\code\\my_thing\\aidoll-pi-new\\imgs\\people.jpg"
+            image_path2 = "../imgs/bear3.jpg"
+            image_path = os.path.expanduser("~/data/test/mh/aidoll-new/imgs/people.jpg")
+            print("image ok")
         rekognition = boto3.client('rekognition',
             aws_access_key_id=self.aws_access_key_id,
             aws_secret_access_key=self.aws_secret_access_key,
