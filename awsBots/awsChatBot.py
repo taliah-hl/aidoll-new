@@ -50,6 +50,7 @@ class AwsChatBot():
         user_prompt = PERSONALITY_PROMPT
         user_prompt += "請以偶像身分對這圖片作出回應。"
         user_prompt += "注意!請在尊重個人資料的情況下對人物進行描述。"
+        user_prompt += "請身為一個風趣的人進行人性的對話"
 
         chat_history = ""
         if os.path.exists(chat_record_path):

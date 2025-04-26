@@ -83,13 +83,12 @@ if __name__ == "__main__":
                     msg = bot.speech_to_text(rec_dir / 'record.wav')
                     print(f"Speech content   : {msg}")
                     
-                    image_path=img_dir/ 'img_test.jpg'
-                    chat_record_path = wk_dir / 'chat_record.txt'
+                    # image_path=img_dir/ 'img_test.jpg'
+                    # chat_record_path = wk_dir / 'chat_record.txt'
                     
-                    res_text = bot.image_to_response(msg, image_path, chat_record_path)
+                    res_text = bot.image_to_response(msg, str(img_dir / 'img.jpg'), str(wk_dir / 'chat_record.txt'))
                     print(f"Response : {res_text}")
                     # print(res_text)
-                    
                     
                     bot.text_to_speech(res_text, sph_dir / 'response.mp3')
                     
