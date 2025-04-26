@@ -15,13 +15,15 @@ if __name__ == "__main__":
     rec_dir = wk_dir / 'recordings'
     sph_dir = wk_dir / 'speechs'
     img_dir = wk_dir / 'imgs'
+    can_dir = wk_dir / 'can_audio'
     
     rec_dir.mkdir(mode=777, parents=True, exist_ok=True)
     sph_dir.mkdir(mode=777, parents=True, exist_ok=True)
     img_dir.mkdir(mode=777, parents=True, exist_ok=True)
+    can_dir.mkdir(mode=777, parents=True, exist_ok=True)
     
     # devices and services setting
-    rec   = Recorder()
+    rec   = Recorder(out_dir=str(rec_dir))
     bot   = AwsBot()
     picam = MyPicam()
     picam.start()
@@ -41,50 +43,102 @@ if __name__ == "__main__":
     while(True):
         client_sock, address = server_sock.accept()
         print(f"Accepted connection from {address}")
-
+        
+        pygame.mixer.music.load(str(can_dir / 'opening_v1.mp3'))
+        pygame.mixer.music.play()
+        
         try:
             while True:
                 data = client_sock.recv(1024)
+                print(data)
                 if not data:
                     break
                 data = data.decode('utf-8')
                 
                 # print(f"Received: {data}")
+
+                # Wait until the sound finishes
+                while pygame.mixer.music.get_busy():
+                    pygame.time.Clock().tick(10)
                 
                 op = data
-                if(op == "Start recording."):
+                if(op == "Cue me."):
                     rec.start()
-                elif(op == "Stop recording."):
-                    rec.stop()
-                elif(op == "Take a picture."):
                     picam.capture(img_dir / 'img.jpg')
-                elif(op == "Invoke response."):
-                    prompt = {}
-                    text = bot.speech_to_text(rec_dir / 'record.wav')
-                    print(f"Speech content   : {text}")
-                    prompt["Speech content"] = f"{text}"
+                elif(op == "Cue ok."):
+                    msg               = ''
+                    image_description = ''
                     
-                    text = bot.image_content(img_dir/ 'img_test.jpg')
-                    print(f"Image Content : {text}")
-                    prompt["Image Content"] = f"{text}"
+                    rec.stop()
                     
-                    print(str(prompt))
+                    try:
+                        pygame.mixer.music.stop()
+                    except:
+                        pass
+                    interlude = pygame.mixer.Sound(str(can_dir / 'Interlude.mp3'))
+                    # pygame.mixer.music.load(str(can_dir / 'Interlude.mp3'))
+                    interlude.set_volume(0.3)
+                    interlude.play(loops=-1)
                     
-                    res_text = bot.chat_with_bot(str(prompt))
+                    msg = bot.speech_to_text(rec_dir / 'record.wav')
+                    print(f"Speech content   : {msg}")
+                                        
+                    image_description = bot.image_content(img_dir/ 'img.jpg')
+                    print(f"Image Content : {image_description}")
+                    
+                    print(str(image_description))
+                    
+                    res_text = bot.chat_with_bot(msg, image_description, str(wk_dir / 'chat_record.txt'))
                     print(f"Response : {res_text}")
-                    print(res_text)
+                    # print(res_text)
+                    
                     
                     bot.text_to_speech(res_text, sph_dir / 'response.mp3')
                     
+                    interlude.stop()
                     pygame.mixer.music.load(str(sph_dir / 'response.mp3'))
                     pygame.mixer.music.play()
-
-                    # Wait until the sound finishes
-                    while pygame.mixer.music.get_busy():
-                        pygame.time.Clock().tick(10)
                     
-                client_sock.send(data)  # echo back
-        except OSError as ex:
+                    # # Wait until the sound finishes
+                    # while pygame.mixer.music.get_busy():
+                    #     pygame.time.Clock().tick(10)
+                elif(op == "Notification."):
+                    try:
+                        pygame.mixer.music.stop()
+                    except:
+                        pass
+                    pygame.mixer.music.load(str(can_dir / 'ActivitiesNotice.mp3'))
+                    pygame.mixer.music.play(start=4.0)
+                elif(op == "Mute."):
+                    try:
+                        interlude.stop()
+                    except:
+                        pass
+                    try:
+                        pygame.mixer.music.stop()
+                    except:
+                        pass
+                    
+                # client_sock.send(data)  # echo back
+        except Exception as ex:
+            try:
+                interlude.stop()
+            except:
+                pass
+            try:
+                pygame.mixer.music.stop()
+            except:
+                pass
+            
+            try:
+                rec.stop()
+            except:
+                pass
+            
+            pygame.mixer.music.load(str(can_dir / 'bye.mp3'))
+            pygame.mixer.music.play()
+                
+
             print(ex)
             client_sock.close()
             
