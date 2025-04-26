@@ -38,7 +38,7 @@ class AwsChatBot():
 
     def chat_with_bot(self, msg: str, image_description:str=None, file_path: str = ''):
         response = None
-        response = self._send_request_to_bot(msg, image_description=None, references = "", file_path = file_path)
+        response = self._send_request_to_bot(msg, image_description, references = "", file_path = file_path)
 
         if response['statusCode'] == 200:
             # chat_record_path = CHAT_RECORD_PATH
@@ -81,7 +81,7 @@ class AwsChatBot():
 
             # user prompt
             user_prompt=""
-            
+
             # photo from user
             if image_description:
                 user_prompt = "這是粉絲分享給你的照片內容:"
