@@ -15,10 +15,12 @@ if __name__ == "__main__":
     rec_dir = wk_dir / 'recordings'
     sph_dir = wk_dir / 'speechs'
     img_dir = wk_dir / 'imgs'
+    can_dir = wk_dir / 'can_audio'
     
     rec_dir.mkdir(mode=777, parents=True, exist_ok=True)
     sph_dir.mkdir(mode=777, parents=True, exist_ok=True)
     img_dir.mkdir(mode=777, parents=True, exist_ok=True)
+    can_dir.mkdir(mode=777, parents=True, exist_ok=True)
     
     # devices and services setting
     rec   = Recorder(out_dir=str(rec_dir))
@@ -41,6 +43,10 @@ if __name__ == "__main__":
     while(True):
         client_sock, address = server_sock.accept()
         print(f"Accepted connection from {address}")
+        
+        pygame.mixer.music.load(str(can_dir / 'opening_v1.mp3'))
+        pygame.mixer.music.play()
+        
         try:
             while True:
                 data = client_sock.recv(1024)
@@ -50,6 +56,10 @@ if __name__ == "__main__":
                 data = data.decode('utf-8')
                 
                 # print(f"Received: {data}")
+
+                # Wait until the sound finishes
+                while pygame.mixer.music.get_busy():
+                    pygame.time.Clock().tick(10)
                 
                 op = data
                 if(op == "Cue me."):
@@ -69,7 +79,7 @@ if __name__ == "__main__":
                     
                     print(str(image_description))
                     
-                    res_text = bot.chat_with_bot(msg, image_description)
+                    res_text = bot.chat_with_bot(msg, image_description, str(wk_dir / 'chat_record.txt'))
                     print(f"Response : {res_text}")
                     print(res_text)
                     
@@ -77,13 +87,24 @@ if __name__ == "__main__":
                     
                     pygame.mixer.music.load(str(sph_dir / 'response.mp3'))
                     pygame.mixer.music.play()
-
-                    # Wait until the sound finishes
-                    while pygame.mixer.music.get_busy():
-                        pygame.time.Clock().tick(10)
+                    
+                    # # Wait until the sound finishes
+                    # while pygame.mixer.music.get_busy():
+                    #     pygame.time.Clock().tick(10)
                     
                 client_sock.send(data)  # echo back
         except OSError as ex:
+            try:
+                pygame.mixer.music.stop()
+            except:
+                pass
+            
+            try:
+                rec.stop()
+            except:
+                pass
+                
+
             print(ex)
             client_sock.close()
             

@@ -8,7 +8,7 @@ import base64
 
 from system_prompt import *
 
-CHAT_RECORD_PATH  = "chat_record.txt"
+# CHAT_RECORD_PATH  = "chat_record.txt"
 
 class AwsChatBot():
     def __init__(self, aws_access_key_id=None, aws_secret_access_key=None, 
@@ -36,19 +36,16 @@ class AwsChatBot():
         self.model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
         self.knowledge_base_id = "GWKCXUG2CA"
 
-    def chat_with_bot(self, msg: str, image_description:str=None):
+    def chat_with_bot(self, msg: str, image_description:str=None, file_path: str = ''):
         response = None
-
-        response = self._send_request_to_bot(msg, image_description=None)
-
-
+        response = self._send_request_to_bot(msg, image_description=None, references = "", file_path = file_path)
 
         if response['statusCode'] == 200:
-            chat_record_path = CHAT_RECORD_PATH
+            # chat_record_path = CHAT_RECORD_PATH
 
             #  save chat record
             try:
-                with open(chat_record_path, "a") as chat_file:
+                with open(file_path, "a") as chat_file:
                     chat_file.write("User Prompt:\n")
                     chat_file.write(f"{msg}\n")
                     chat_file.write("Bot Response:\n")
@@ -60,12 +57,12 @@ class AwsChatBot():
         else:
             return "不好意思，我聽不清楚，可以跟我再說一次嗎?"
 
-    def _send_request_to_bot(self, msg:str, image_description:str=None, references:str=None):
+    def _send_request_to_bot(self, msg:str, image_description:str=None, references:str=None, file_path: str = ""):
         try:
             system_prompt=PERSONALITY_PROMPT
 
             chat_history = ""
-            chat_record_path = CHAT_RECORD_PATH
+            chat_record_path = file_path
             if os.path.exists(chat_record_path):
                 with open(chat_record_path, "r") as chat_file:
                     chat_history = chat_file.read()
