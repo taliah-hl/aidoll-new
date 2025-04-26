@@ -59,18 +59,18 @@ if __name__ == "__main__":
                 elif(op == "Take a picture."):
                     picam.capture(img_dir / 'img.jpg')
                 elif(op == "Invoke response."):
-                    prompt = {}
-                    text = bot.speech_to_text(rec_dir / 'record.wav')
-                    print(f"Speech content   : {text}")
-                    prompt["Speech content"] = f"{text}"
+                    msg               = ''
+                    image_description = ''
                     
-                    text = bot.image_content(img_dir/ 'img_test.jpg')
-                    print(f"Image Content : {text}")
-                    prompt["Image Content"] = f"{text}"
+                    msg = bot.speech_to_text(rec_dir / 'record.wav')
+                    print(f"Speech content   : {msg}")
+                                        
+                    image_description = bot.image_content(img_dir/ 'img_test.jpg')
+                    print(f"Image Content : {image_description}")
                     
-                    print(str(prompt))
+                    print(str(image_description))
                     
-                    res_text = bot.chat_with_bot(str(prompt))
+                    res_text = bot.chat_with_bot(msg, image_description)
                     print(f"Response : {res_text}")
                     print(res_text)
                     
