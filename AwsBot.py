@@ -2,22 +2,35 @@ import os
 from pathlib import Path
 import boto3
 import json
+import requests
+import wget
 # import time
 # from utility import encode_image
 import base64
 
+from openai import OpenAI
+
 from constants import BEDROCK_KNOWLEDGE_BASE_ID, BEDROCK_MODEL_ID, REGION
 from awsBots.awsChatBot import AwsChatBot
 from awsBots.awsImageToText import AwsImageToText
+
+BASE_URL = "https://persona-sound.data.gamania.com/api/v1/public/voice"
+TOKEN    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJhd3NfaGFja2F0aG9uIiwiZXhwaXJlcyI6MTc0NTc0ODAwMH0.9qpg1xraE_d_Hua2brAmCfRlQSce6p2kdipgq8j1iqo"
+
 
 def encode_image(image_file_path):
     with open(image_file_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-
 class AwsBot():
     def __init__(self):
+        self.client = OpenAI(
+            # api_key=os.environ.get("OPENAI_API_KEY"),
+            api_key = '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'
+        )
+        
+        
        # Initialize AWS credentials as before
         self.aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
         self.aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
@@ -71,13 +84,30 @@ class AwsBot():
 
     
     def text_to_speech(self, text, speech_file_path):
-        with self.client.audio.speech.with_streaming_response.create(
-            model="gpt-4o-mini-tts",
-            voice="echo",
-            input=f"{text}",
-            instructions="Speak in a cheerful and positive tone.",
-        ) as response:
-            response.stream_to_file(speech_file_path)
+            
+        speech_file_path.unlink(missing_ok=True)
+        
+        
+        headers = {
+            "Authorization": f"Bearer {TOKEN}"
+        }
+
+        params = {
+            "text": f"{text}",
+            "model_id": 6,
+            "speaker_name": "puyang",
+            "speed_factor": 1.0,
+            "mode": "file"
+        }
+        
+        try:
+            res = requests.get(BASE_URL, headers=headers, params=params)
+            res = res.json()
+        except Exception as ex:
+            print(f"{ex}")
+            return
+        
+        wget.download(res['media_url'], out=str(speech_file_path))
         
 
     
