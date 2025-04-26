@@ -72,8 +72,8 @@ class AwsBot():
         else:
             return "error"
 
-    def chat_with_bot(self, msg: str, image_description: str, use_knowledge_base:bool=False):
-        return self.chat_bot.chat_with_bot(msg,image_description, use_knowledge_base)
+    def chat_with_bot(self, msg: str, image_description: str):
+        return self.chat_bot.chat_with_bot(msg,image_description)
 
     
     def image_content(self, image_file_path: Path=None):
