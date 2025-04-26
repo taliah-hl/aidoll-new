@@ -103,7 +103,7 @@ class AwsBot():
         except Exception as ex:
             print(f"{ex}")
             return
-        
+        print(res)
         wget.download(res['media_url'], out=str(speech_file_path))
         
 

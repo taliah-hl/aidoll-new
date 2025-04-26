@@ -71,29 +71,60 @@ if __name__ == "__main__":
                     
                     rec.stop()
                     
+                    try:
+                        pygame.mixer.music.stop()
+                    except:
+                        pass
+                    interlude = pygame.mixer.Sound(str(can_dir / 'Interlude.mp3'))
+                    # pygame.mixer.music.load(str(can_dir / 'Interlude.mp3'))
+                    interlude.set_volume(0.3)
+                    interlude.play(loops=-1)
+                    
                     msg = bot.speech_to_text(rec_dir / 'record.wav')
                     print(f"Speech content   : {msg}")
                                         
-                    image_description = bot.image_content(img_dir/ 'img_test.jpg')
+                    image_description = bot.image_content(img_dir/ 'img.jpg')
                     print(f"Image Content : {image_description}")
                     
                     print(str(image_description))
                     
                     res_text = bot.chat_with_bot(msg, image_description, str(wk_dir / 'chat_record.txt'))
                     print(f"Response : {res_text}")
-                    print(res_text)
+                    # print(res_text)
+                    
                     
                     bot.text_to_speech(res_text, sph_dir / 'response.mp3')
                     
+                    interlude.stop()
                     pygame.mixer.music.load(str(sph_dir / 'response.mp3'))
                     pygame.mixer.music.play()
                     
                     # # Wait until the sound finishes
                     # while pygame.mixer.music.get_busy():
                     #     pygame.time.Clock().tick(10)
+                elif(op == "Notification."):
+                    try:
+                        pygame.mixer.music.stop()
+                    except:
+                        pass
+                    pygame.mixer.music.load(str(can_dir / 'ActivitiesNotice.mp3'))
+                    pygame.mixer.music.play(start=4.0)
+                elif(op == "Mute."):
+                    try:
+                        interlude.stop()
+                    except:
+                        pass
+                    try:
+                        pygame.mixer.music.stop()
+                    except:
+                        pass
                     
-                client_sock.send(data)  # echo back
-        except OSError as ex:
+                # client_sock.send(data)  # echo back
+        except Exception as ex:
+            try:
+                interlude.stop()
+            except:
+                pass
             try:
                 pygame.mixer.music.stop()
             except:
@@ -103,6 +134,9 @@ if __name__ == "__main__":
                 rec.stop()
             except:
                 pass
+            
+            pygame.mixer.music.load(str(can_dir / 'bye.mp3'))
+            pygame.mixer.music.play()
                 
 
             print(ex)

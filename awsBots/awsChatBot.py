@@ -81,7 +81,6 @@ class AwsChatBot():
 
             # user prompt
             user_prompt=""
-
             # photo from user
             if image_description:
                 user_prompt = "這是粉絲分享給你的照片內容:"
