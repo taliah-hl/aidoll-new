@@ -45,6 +45,7 @@ class AwsBot():
         self.model_id = BEDROCK_MODEL_ID
         self.max_tokens = 500
         self.system_prompt=SYSTEM_PROMPT
+        self.knowledge_base_id = "GWKCXUG2CA"
         
         
     def speech_to_text(self, audio_file_path: Path):
@@ -59,7 +60,7 @@ class AwsBot():
         return transcription.text
 
     def chat_with_bot(self, msg: str, image_description: str, use_knowledge_base:bool=False):
-        aws_chat_bot =AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token)
+        aws_chat_bot =AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token, self.knowledge_base_id)
         return aws_chat_bot.chat_with_bot(msg,image_description, use_knowledge_base)
 
     
