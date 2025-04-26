@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
 import bluetooth
+import pygame
 
 from Recorder import Recorder
 from Picam    import MyPicam
-from GptBot      import GptBot
+# from GptBot      import GptBot
+from AwsBot import AwsBot
 
 if __name__ == "__main__":
     # ------ dir, path setting ------ #
@@ -20,9 +22,12 @@ if __name__ == "__main__":
     
     # devices and services setting
     rec   = Recorder()
-    bot   = GptBot()
+    bot   = AwsBot()
     picam = MyPicam()
     picam.start()
+    
+    # speaker initiate
+    pygame.mixer.init()
     
     # ------ bluetooth setting ------ #
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -70,6 +75,13 @@ if __name__ == "__main__":
                     print(res_text)
                     
                     bot.text_to_speech(res_text, sph_dir / 'response.mp3')
+                    
+                    pygame.mixer.music.load(str(sph_dir / 'response.mp3'))
+                    pygame.mixer.music.play()
+
+                    # Wait until the sound finishes
+                    while pygame.mixer.music.get_busy():
+                        pygame.time.Clock().tick(10)
                     
                 client_sock.send(data)  # echo back
         except OSError as ex:
