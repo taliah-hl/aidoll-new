@@ -14,8 +14,9 @@ class AwsImageToText:
     def detect_image_labels(self, image_path=None):
         # Create a Rekognition client
         if not image_path:
-            print("Warning: no image provide, will use default image.")
-            image_path = os.path.expanduser("~/data/test/mh/aidoll-new/imgs/people.jpg")
+            print("[image to text] No image provided.")
+            return None
+            #image_path = os.path.expanduser("~/data/test/mh/aidoll-new/imgs/people.jpg")
         rekognition = boto3.client('rekognition',
             aws_access_key_id=self.aws_access_key_id,
             aws_secret_access_key=self.aws_secret_access_key,
