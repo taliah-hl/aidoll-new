@@ -21,7 +21,7 @@ if __name__ == "__main__":
     img_dir.mkdir(mode=777, parents=True, exist_ok=True)
     
     # devices and services setting
-    rec   = Recorder()
+    rec   = Recorder(out_dir=str(rec_dir))
     bot   = AwsBot()
     picam = MyPicam()
     picam.start()
@@ -41,10 +41,10 @@ if __name__ == "__main__":
     while(True):
         client_sock, address = server_sock.accept()
         print(f"Accepted connection from {address}")
-
         try:
             while True:
                 data = client_sock.recv(1024)
+                print(data)
                 if not data:
                     break
                 data = data.decode('utf-8')
@@ -52,15 +52,14 @@ if __name__ == "__main__":
                 # print(f"Received: {data}")
                 
                 op = data
-                if(op == "Start recording."):
+                if(op == "Cue me."):
                     rec.start()
-                elif(op == "Stop recording."):
-                    rec.stop()
-                elif(op == "Take a picture."):
                     picam.capture(img_dir / 'img.jpg')
-                elif(op == "Invoke response."):
+                elif(op == "Cue ok."):
                     msg               = ''
                     image_description = ''
+                    
+                    rec.stop()
                     
                     msg = bot.speech_to_text(rec_dir / 'record.wav')
                     print(f"Speech content   : {msg}")
