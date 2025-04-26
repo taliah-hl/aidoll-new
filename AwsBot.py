@@ -8,6 +8,8 @@ import base64
 
 from constants import BEDROCK_KNOWLEDGE_BASE_ID, BEDROCK_MODEL_ID, REGION
 from system_prompt import SYSTEM_PROMPT
+from awsBots.awsChatBot import AwsChatBot
+from awsBots.awsImageToText import AwsImageToText
 
 def encode_image(image_file_path):
     with open(image_file_path, "rb") as image_file:
@@ -20,7 +22,9 @@ class AwsBot():
        # Initialize AWS credentials as before
         print("AWS_ACCESS_KEY_ID:", os.environ.get('AWS_ACCESS_KEY_ID'))
         print("AWS_SECRET_ACCESS_KEY:", os.environ.get('AWS_SECRET_ACCESS_KEY'))
-
+        self.aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
+        self.aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+        self.aws_session_token = os.environ.get('AWS_SESSION_TOKEN')
         self.bedrock_agent_client = boto3.client(
             service_name='bedrock-agent-runtime',
             region_name=REGION,
@@ -54,79 +58,16 @@ class AwsBot():
 
         return transcription.text
 
-    def chat_with_bot(self, msg: str, use_knowledge_base:bool=False):
-        response = None
-        if not use_knowledge_base:
-            response = self._chat_without_knowledge_base(msg)
-        else:
-            response = self._chat_with_knowledge_base(msg)
+    def chat_with_bot(self, msg: str, image_description: str, use_knowledge_base:bool=False):
+        aws_chat_bot =AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token)
+        return aws_chat_bot.chat_with_bot(msg,image_description, use_knowledge_base)
 
-        if response['statusCode'] == 200:
-                return response['body']['response']
-        else:
-            return "Generation Failed"
-        return response
     
-    def _chat_without_knowledge_base(self, msg:str):
-        try:
-
-
-            
-            body = json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": self.max_tokens,
-                "system": self.system_prompt,
-                "messages": [
-                    {"role": "user", "content": [{"type": "text", "text": msg}]}
-                ]
-            })
-
-            
-            response = self.bedrock_runtime_client.invoke_model(
-                modelId=self.model_id,
-                contentType="application/json",
-                accept="application/json",
-                body=body
-            )
-            
-            response_body = json.loads(response['body'].read())
-            reply_text = response_body['content'][0]['text']
-            
-            return {
-                'statusCode': 200,
-                'body': {
-                    'response': reply_text,
-                    'mode': 'direct'
-                }
-            }
-        except Exception as e:
-            print(f"Error in direct model generation: {str(e)}")
-            raise
-
-    def _chat_with_knowledge_base(msg:str):
-        pass
     
-    def image_content(self, image_file_path: Path):
-        base64_image = encode_image(image_file_path)
-        
-        response = self.client.responses.create(
-            model="gpt-4.1-mini",
-            input=[
-                {
-                    "role": "user",
-                    "content": [
-                        { "type": "input_text", "text": "what's in this image?" },
-                        {
-                            "type": "input_image",
-                            "image_url": f"data:image/jpeg;base64,{base64_image}",
-                        },
-                    ],
-                }
-            ],
-        )
-        
-        # print(response.output_text)
-        return response.output_text
+    def image_content(self, image_file_path: Path=None):
+        awsImageToText = AwsImageToText(self.aws_access_key_id, self.aws_secret_access_key, self.aws_session_token)
+        return awsImageToText.detect_image_labels(image_file_path)
+
     
     def text_to_speech(self, text, speech_file_path):
         with self.client.audio.speech.with_streaming_response.create(
