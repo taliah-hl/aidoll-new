@@ -1,27 +1,20 @@
 import os
 from pathlib import Path
 import boto3
-import json
 import requests
 import wget
-# import time
-# from utility import encode_image
+import time
 import base64
 
 from openai import OpenAI
 
 from constants import BEDROCK_KNOWLEDGE_BASE_ID, BEDROCK_MODEL_ID, REGION
-from awsBots.awsChatBot import AwsChatBot
-from awsBots.awsImageToText import AwsImageToText
+from awsBots.awsChatBot       import AwsChatBot
+from awsBots.awsImageToText    import AwsImageToText
+from awsBots.AudioTranscriber import AudioTranscriber
 
 BASE_URL = "https://persona-sound.data.gamania.com/api/v1/public/voice"
 TOKEN    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJhd3NfaGFja2F0aG9uIiwiZXhwaXJlcyI6MTc0NTc0ODAwMH0.9qpg1xraE_d_Hua2brAmCfRlQSce6p2kdipgq8j1iqo"
-
-
-def encode_image(image_file_path):
-    with open(image_file_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
 
 class AwsBot():
     def __init__(self):
@@ -59,28 +52,32 @@ class AwsBot():
         
         self.knowledge_base_id = BEDROCK_KNOWLEDGE_BASE_ID
         
+        self.chat_bot      = AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token)
+        self.transcriber   = AudioTranscriber(bucket_name='conversationtestbucket')
+        self.img_retriever = AwsImageToText(self.aws_access_key_id, self.aws_secret_access_key, self.aws_session_token)
+        
         
         
     def speech_to_text(self, audio_file_path: Path):
-        # audio_file= open("/path/to/file/audio.mp3", "rb")
-        audio_file= open(f"{audio_file_path}", "rb")
+        s3_key = 'audio/input_audio.wav' # file path on s3
+        self.transcriber.upload_audio(str(audio_file_path), s3_key)
+        
+        job_name = f"audio_to_text_job_{int(time.time())}"
+        self.transcriber.safe_start_transcription(job_name=job_name, media_format='wav', language_code='zh-TW')
 
-        transcription = self.client.audio.transcriptions.create(
-            model="gpt-4o-transcribe", 
-            file=audio_file
-        )
-
-        return transcription.text
+        if self.transcriber.wait_for_completion() == 'COMPLETED':
+            text = self.transcriber.get_transcribed_text()
+            # return {"status": 200, 'text': f"{text}"}
+            return text
+        else:
+            return "error"
 
     def chat_with_bot(self, msg: str, image_description: str, use_knowledge_base:bool=False):
-        aws_chat_bot =AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token)
-        return aws_chat_bot.chat_with_bot(msg,image_description, use_knowledge_base)
+        return self.chat_bot.chat_with_bot(msg,image_description, use_knowledge_base)
 
     
-    
     def image_content(self, image_file_path: Path=None):
-        awsImageToText = AwsImageToText(self.aws_access_key_id, self.aws_secret_access_key, self.aws_session_token)
-        return awsImageToText.detect_image_labels(image_file_path)
+        return self.img_retriever.detect_image_labels(image_file_path)
 
     
     def text_to_speech(self, text, speech_file_path):
