@@ -36,6 +36,19 @@ class AwsChatBot():
         self.model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
         self.knowledge_base_id = "GWKCXUG2CA"
 
+    def _save_chat_record(self, msg, response, chat_record_path: str = ''):
+        try:
+            with open(chat_record_path, "a") as chat_file:
+                chat_file.write("User Prompt:\n")
+                chat_file.write(f"{msg}\n")
+                chat_file.write("Bot Response:\n")
+                chat_file.write(f"{response['body']['response']}\n")
+                chat_file.write("-" * 50 + "\n")  # Separator for readability
+                print("Chat record saved successfully.")
+        except Exception as err:
+            print("Error: cannot write to file:", err)
+
+
     def image_to_response(self, msg: str, image_path:str=None, chat_record_path: str = ''):
 
         references = self._retrieve_references(msg)
@@ -109,12 +122,17 @@ class AwsChatBot():
                 modelId="anthropic.claude-3-sonnet-20240229-v1:0",  # or your preferred Claude 3 model
                 body=json.dumps(whole_prompt)
             )
+            if response['statusCode'] == 200:
             
-            # Parse response
-            response_body = json.loads(response['body'].read())
-            description = response_body['content'][0]['text']
-            
-            return description
+                # Parse response
+                response_body = json.loads(response['body'].read())
+                description = response_body['content'][0]['text']
+                #  save chat record
+                self._save_chat_record(msg, description, chat_record_path)
+
+                return description
+            else:
+                return "不好意思，我聽不清楚，可以跟我再說一次嗎?"
 
         except Exception as e:
             print(f"Error generating description: {str(e)}")
