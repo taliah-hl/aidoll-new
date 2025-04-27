@@ -2,11 +2,9 @@ import os
 from pathlib import Path
 import boto3
 import json
-# import time
-# from utility import encode_image
 import base64
 
-from system_prompt import *
+from config.system_prompt import *
 
 # CHAT_RECORD_PATH  = "chat_record.txt"
 

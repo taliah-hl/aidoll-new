@@ -4,17 +4,12 @@ import boto3
 import requests
 import wget
 import time
-import base64
 
-from openai import OpenAI
+from awsServices.awsChatBot       import AwsChatBot
+from awsServices.awsImageToText    import AwsImageToText
+from awsServices.AudioTranscriber import AudioTranscriber
 
-from constants import BEDROCK_KNOWLEDGE_BASE_ID, BEDROCK_MODEL_ID, REGION
-from awsBots.awsChatBot       import AwsChatBot
-from awsBots.awsImageToText    import AwsImageToText
-from awsBots.AudioTranscriber import AudioTranscriber
-
-BASE_URL = "https://persona-sound.data.gamania.com/api/v1/public/voice"
-TOKEN    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJhd3NfaGFja2F0aG9uIiwiZXhwaXJlcyI6MTc0NTc0ODAwMH0.9qpg1xraE_d_Hua2brAmCfRlQSce6p2kdipgq8j1iqo"
+GAMANIA_BASE_URL = "https://persona-sound.data.gamania.com/api/v1/public/voice"
 
 class AwsBot():
     def __init__(self):
@@ -28,29 +23,11 @@ class AwsBot():
         self.aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
         self.aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
         self.aws_session_token = os.environ.get('AWS_SESSION_TOKEN')
-        # print("aws access key: ", self.aws_access_key_id)
-        # print("aws secrete key:",  self.aws_secret_access_key)
-        # print("aws session token:", self.aws_session_token)
+        self.gamina_voice_api_key = os.environ.get('GAMANIA_VOICE_API_KEY')
+
         if not self.aws_access_key_id or not self.aws_secret_access_key:
             raise EnvironmentError("AWS credentials are not set in the environment variables.")
         
-        self.bedrock_agent_client = boto3.client(
-            service_name='bedrock-agent-runtime',
-            region_name=REGION,
-            aws_access_key_id=self.aws_access_key_id,
-            aws_secret_access_key=self.aws_secret_access_key,
-            aws_session_token=self.aws_session_token
-        )
-        
-        self.bedrock_runtime_client = boto3.client(
-            service_name='bedrock-runtime',
-            region_name='us-west-2',
-            aws_access_key_id=self.aws_access_key_id,
-            aws_secret_access_key=self.aws_secret_access_key,
-            aws_session_token=self.aws_session_token
-        )
-        
-        self.knowledge_base_id = BEDROCK_KNOWLEDGE_BASE_ID
         
         self.chat_bot      = AwsChatBot(self.aws_access_key_id,self.aws_secret_access_key,self.aws_session_token)
         self.transcriber   = AudioTranscriber(bucket_name='conversationtestbucket')
@@ -88,7 +65,7 @@ class AwsBot():
         
         
         headers = {
-            "Authorization": f"Bearer {TOKEN}"
+            "Authorization": f"Bearer {self.gamina_voice_api_key}"
         }
 
         params = {
@@ -100,7 +77,7 @@ class AwsBot():
         }
         
         try:
-            res = requests.get(BASE_URL, headers=headers, params=params)
+            res = requests.get(GAMANIA_BASE_URL, headers=headers, params=params)
             res = res.json()
         except Exception as ex:
             print(f"{ex}")

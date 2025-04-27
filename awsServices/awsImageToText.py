@@ -3,7 +3,7 @@ import os
 import json
 import base64
 
-from system_prompt import *
+from config.system_prompt import *
 
 class AwsImageToText:
 
