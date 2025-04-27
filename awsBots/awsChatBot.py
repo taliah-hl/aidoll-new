@@ -42,7 +42,8 @@ class AwsChatBot():
                 chat_file.write("User Prompt:\n")
                 chat_file.write(f"{msg}\n")
                 chat_file.write("Bot Response:\n")
-                chat_file.write(f"{response['body']['response']}\n")
+                # chat_file.write(f"{response['body']['response']}\n")
+                chat_file.write(f"{response}\n")
                 chat_file.write("-" * 50 + "\n")  # Separator for readability
                 print("Chat record saved successfully.")
         except Exception as err:
@@ -122,7 +123,8 @@ class AwsChatBot():
                 modelId="anthropic.claude-3-sonnet-20240229-v1:0",  # or your preferred Claude 3 model
                 body=json.dumps(whole_prompt)
             )
-            if response['statusCode'] == 200:
+            # print(f"response: {response}")
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             
                 # Parse response
                 response_body = json.loads(response['body'].read())
@@ -136,7 +138,7 @@ class AwsChatBot():
 
         except Exception as e:
             print(f"Error generating description: {str(e)}")
-            return None
+            return "不好意思，我聽不清楚，可以跟我再說一次嗎?"
         
     def _encode_image_to_base64(self, image_path):
         with open(image_path, 'rb') as image_file:
