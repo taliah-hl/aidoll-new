@@ -1,1 +1,9 @@
 __pycache__
+__pycache__/*
+**/__pycache__/*
+imgs/*
+output.log
+chat_record.txt
+transcription_result.json
+speechs/response.mp3
+recordings/record.wav
