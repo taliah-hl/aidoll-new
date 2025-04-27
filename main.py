@@ -3,19 +3,18 @@ from pathlib import Path
 import bluetooth
 import pygame
 
-from Recorder import Recorder
-from Picam    import MyPicam
-# from GptBot      import GptBot
+from piModules.Recorder import Recorder
+from piModules.Picam    import MyPicam
 from AwsBot import AwsBot
 
 if __name__ == "__main__":
     # ------ dir, path setting ------ #
     wk_dir = Path(os.path.dirname(__file__))
     
-    rec_dir = wk_dir / 'recordings'
-    sph_dir = wk_dir / 'speechs'
-    img_dir = wk_dir / 'imgs'
-    can_dir = wk_dir / 'can_audio'
+    rec_dir = wk_dir / 'tmp/userRecording'
+    sph_dir = wk_dir / 'tmp/responseSpeech'
+    img_dir = wk_dir / 'tmp/userPhoto'
+    can_dir = wk_dir / 'resources/can_audio'
     
     rec_dir.mkdir(mode=777, parents=True, exist_ok=True)
     sph_dir.mkdir(mode=777, parents=True, exist_ok=True)
@@ -83,8 +82,6 @@ if __name__ == "__main__":
                     msg = bot.speech_to_text(rec_dir / 'record.wav')
                     print(f"Speech content   : {msg}")
                     
-                    # image_path=img_dir/ 'img_test.jpg'
-                    # chat_record_path = wk_dir / 'chat_record.txt'
                     
                     res_text = bot.image_to_response(msg, str(img_dir / 'img.jpg'), str(wk_dir / 'chat_record.txt'))
                     print(f"Response : {res_text}")
