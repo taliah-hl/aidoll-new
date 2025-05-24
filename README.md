@@ -6,23 +6,35 @@ Winning project of AWS Generative AI Hackathon 2025 (AI Idol Topic).
 
 Aiodoll transforms a Raspberry Pi-powered doll into a smart, interactive AI companion! Enjoy real-time chats and image recognition, all infused with the personality and life story of your favorite idol!
 
-
 ## Features
+
 - Real-time voice conversations mimicking your idolyour idol’s personality
 - Remember your idol's life-history and talk like your idol
 - Raspberry Pi-based hardware integration
 - Mobile app connection for user interaction
-   - Multimodal sensing: sees, listens, and responds
+  - Multimodal sensing: sees, listens, and responds
 
 ## Techniques
+
 - Conversational AI with AWS Bedrock and Rekognition
 - Retrieval Augmented Generation (RAG) using AWS Knowledge Base for personality mimicking
 - Context awareness via conversational memory management
 
-
 ## Python testing script
 
 Test this project's image response functionality by `python test_image_response.py`
+
+## Architecture
+
+![Architecture](demo_pics/architecture.png)
+
+## Product Photos
+
+**Product Prototype Picture**
+![alt text](demo_pics/demo_pic1.png)
+
+**Product Photo**
+![alt text](demo_pics/demo_pic2.png)
 
 ## File Structure
 
