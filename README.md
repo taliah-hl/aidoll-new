@@ -1,17 +1,28 @@
-# Aiodoll
+# Aiodoll: Real-Time AI Idol Companion
 
-Aiodoll is a Raspberry Pi-based interactive system that connects with a mobile app to engage with users in real time.
-It includes a basic Python testing script to simulate and verify image response functionality.
+Winning project of AWS Generative AI Hackathon 2025 (AI Idol Topic).
+
+(Team Name: 風中凌亂, News coverage: https://www.bnext.com.tw/article/83255/awshackthon2025)
+
+Aiodoll transforms a Raspberry Pi-powered doll into a smart, interactive AI companion! Enjoy real-time chats and image recognition, all infused with the personality and life story of your favorite idol!
+
 
 ## Features
+- Real-time voice conversations mimicking your idolyour idol’s personality
+- Remember your idol's life-history and talk like your idol
+- Raspberry Pi-based hardware integration
+- Mobile app connection for user interaction
+   - Multimodal sensing: sees, listens, and responds
 
-Raspberry Pi-based hardware integration
+## Techniques
+- Conversational AI with AWS Bedrock and Rekognition
+- Retrieval Augmented Generation (RAG) using AWS Knowledge Base for personality mimicking
+- Context awareness via conversational memory management
 
-Mobile app connection for user interaction
 
 ## Python testing script
 
-`python test_image_response.py`
+Test this project's image response functionality by `python test_image_response.py`
 
 ## File Structure
 
@@ -45,7 +56,7 @@ Mobile app connection for user interaction
 │
 ├─test
 │      test_image.jpg
-│      test_image_to_response.py
+│      test_image_to_response.py  <-- test file
 │
 └──tmp
    ├─repsonseSpeech
