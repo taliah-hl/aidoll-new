@@ -12,7 +12,7 @@ Aiodoll transforms a Raspberry Pi-powered doll into a smart, interactive AI comp
 - Remember your idol's life-history and talk like your idol
 - Raspberry Pi-based hardware integration
 - Mobile app connection for user interaction
-  - Multimodal sensing: sees, listens, and responds
+- Multimodal sensing: sees, listens, and responds
 
 ## Techniques
 
