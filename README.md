@@ -2,7 +2,7 @@
 
 Winning project of AWS Generative AI Hackathon 2025 (AI Idol Topic).
 
-(Team Name: 風中凌亂, News coverage: https://www.bnext.com.tw/article/83255/awshackthon2025)
+(Team Name: 風中凌亂, News coverage: [「風中凌亂」Aidol用AI打造偶像陪伴新體驗](https://www.digitimes.com.tw/tech/dt/n/shwnws.asp?cnlid=13&id=0000721877_X1U9UTHK61JO1H8TBYJKF&cat=30) )
 
 Aiodoll transforms a Raspberry Pi-powered doll into a smart, interactive AI companion! Enjoy real-time chats and image recognition, all infused with the personality and life story of your favorite idol!
 
