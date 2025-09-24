@@ -8,7 +8,7 @@ Aiodoll transforms a Raspberry Pi-powered doll into a smart, interactive AI comp
 
 ## Features
 
-- Real-time voice conversations mimicking your idolyour idol’s personality
+- Real-time voice conversations mimicking your idol’s personality
 - Remember your idol's life-history and talk like your idol
 - Raspberry Pi-based hardware integration
 - Mobile app connection for user interaction
